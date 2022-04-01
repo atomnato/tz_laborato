@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tz_laborato/widgets/tasks_screen.dart';
+import 'package:tz_laborato/widgets/utils/colors.dart';
 
 void main() {
   runApp(const Application());
@@ -13,12 +15,19 @@ class Application extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primaryColor: const Color(0xFF36427D),
+        appBarTheme: const AppBarTheme(
+          color: Colors.transparent,
+          elevation: 0.0,
+        ),
+        scaffoldBackgroundColor: kPrimaryColor,
         textTheme: GoogleFonts.manropeTextTheme(
           Theme.of(context).textTheme,
+        ).apply(
+          bodyColor: kWhiteColor,
+          displayColor: kWhiteColor,
         ),
       ),
-      home: Container(),
+      home: const TasksScreen(),
     );
   }
 }
