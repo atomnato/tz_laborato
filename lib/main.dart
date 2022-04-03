@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:tz_laborato/widgets/tasks_screen.dart';
+import 'package:tz_laborato/widgets/homework_board_screen.dart';
 import 'package:tz_laborato/widgets/utils/colors.dart';
 
 void main() {
@@ -27,7 +27,7 @@ class Application extends StatelessWidget {
           displayColor: kWhiteColor,
         ),
       ),
-      home: const TasksScreen(),
+      home: const HomeworkBoardScreen(),
     );
   }
 }
