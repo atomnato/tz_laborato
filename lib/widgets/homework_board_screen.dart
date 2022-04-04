@@ -21,8 +21,6 @@ class HomeworkBoardScreen extends StatefulWidget {
 }
 
 class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-
   //Cubit
   late HomeworkBoardCubit _cubit;
 
@@ -35,7 +33,6 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
   Widget _taskWidgetBuilder(
     Task model,
     bool isLast,
-    Animation<double> animation,
     Function()? onTap,
   ) =>
       TaskTile.parseTypes(model, last: isLast);
@@ -88,8 +85,8 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
                   ),
                 );
               }
-              if (state is HomeworkBoardScreenLoaded) {
-                final List<Task> list = state.taskModel.tasks;
+              if (state is HomeworkBoardScreenDefault) {
+                final List<Task> list = _cubit.modelView.tasks;
 
                 return Column(
                   mainAxisSize: MainAxisSize.min,
@@ -98,22 +95,19 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
                     Flexible(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 17.0),
-                        child: AnimatedList(
+                        child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
-                          key: _listKey,
-                          initialItemCount: list.length,
+                          itemCount: list.length,
                           itemBuilder: (
                             BuildContext context,
                             int index,
-                            Animation<double> animation,
                           ) {
                             bool lastElem =
                                 index == (list.length - 1) ? true : false;
                             return _taskWidgetBuilder(
                               list[index],
                               lastElem,
-                              animation,
                               () {},
                             );
                           },
@@ -126,6 +120,43 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
                   ],
                 );
               }
+
+              if (state is HomeworkBoardScreenTypeSelected) {
+                final List<Task> list = state.tasks;
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _HeaderMenuSection(),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 17.0),
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: list.length,
+                          itemBuilder: (
+                            BuildContext context,
+                            int index,
+                          ) {
+                            bool lastElem =
+                                index == (list.length - 1) ? true : false;
+                            return _taskWidgetBuilder(
+                              list[index],
+                              lastElem,
+                              () {},
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 57.0,
+                    ),
+                  ],
+                );
+              }
+
               return const AlertDialog(title: Text("Critical error"));
             },
           ),
@@ -179,36 +210,54 @@ class _HeaderMenuSection extends StatefulWidget {
 }
 
 class _HeaderMenuSectionState extends State<_HeaderMenuSection> {
+  late HomeworkBoardCubit _cubit;
+
   Widget menuElement({
     required Color color,
     required String pathIcon,
     required String perTask,
+    required Function()? onTap,
+    required bool selected,
   }) {
-    return Container(
-      width: MediaQuery.of(context).size.width * 0.267,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      padding: const EdgeInsets.only(
-        top: 14.0,
-        bottom: 14.0,
-        left: 16.0,
-        right: 12,
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            perTask,
-            style: GoogleFonts.jua(
-              textStyle: const TextStyle(fontSize: 30.0, color: kWhiteColor50),
-            ),
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedOpacity(
+        opacity: selected ? 1.0 : 0.2,
+        duration: const Duration(milliseconds: 100),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.267,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(12.0),
           ),
-          SvgPicture.asset(pathIcon),
-        ],
+          padding: const EdgeInsets.only(
+            top: 14.0,
+            bottom: 14.0,
+            left: 16.0,
+            right: 12,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                perTask,
+                style: GoogleFonts.jua(
+                  textStyle:
+                      const TextStyle(fontSize: 30.0, color: kWhiteColor50),
+                ),
+              ),
+              SvgPicture.asset(pathIcon),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = BlocProvider.of<HomeworkBoardCubit>(context);
   }
 
   @override
@@ -217,24 +266,85 @@ class _HeaderMenuSectionState extends State<_HeaderMenuSection> {
       padding: const EdgeInsets.only(top: 17.0),
       child: BlocBuilder<HomeworkBoardCubit, HomeworkBoardState>(
         builder: (context, state) {
-          if (state is HomeworkBoardScreenLoaded) {
+          if (state is HomeworkBoardScreenDefault) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 menuElement(
-                  perTask: '${state.taskModel.perHomework}',
+                  perTask: '${_cubit.modelView.taskHomework.length}',
                   pathIcon: 'assets/icons/homework_icon.svg',
                   color: kPurpleColor,
+                  selected: true,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskHomework.first.status,
+                    );
+                  },
                 ),
                 menuElement(
-                  perTask: '${state.taskModel.perLateHomework}',
+                  perTask: '${_cubit.modelView.taskLateHomework.length}',
                   pathIcon: 'assets/icons/late_homework_icon.svg',
                   color: kRedColor,
+                  selected: true,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskLateHomework.first.status,
+                    );
+                  },
                 ),
                 menuElement(
-                  perTask: '${state.taskModel.perRework}',
+                  perTask: '${_cubit.modelView.taskRework.length}',
                   pathIcon: 'assets/icons/rework_icon.svg',
                   color: kOrangeColor,
+                  selected: true,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskRework.first.status,
+                    );
+                  },
+                ),
+              ],
+            );
+          }
+          if (state is HomeworkBoardScreenTypeSelected) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                menuElement(
+                  perTask: '${_cubit.modelView.taskHomework.length}',
+                  pathIcon: 'assets/icons/homework_icon.svg',
+                  color: kPurpleColor,
+                  selected: state.status ==
+                      _cubit.modelView.taskHomework.first.status,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskHomework.first.status,
+                    );
+                  },
+                ),
+                menuElement(
+                  perTask: '${_cubit.modelView.taskLateHomework.length}',
+                  pathIcon: 'assets/icons/late_homework_icon.svg',
+                  color: kRedColor,
+                  selected: state.status ==
+                      _cubit.modelView.taskLateHomework.first.status,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskLateHomework.first.status,
+                    );
+                  },
+                ),
+                menuElement(
+                  perTask: '${_cubit.modelView.taskRework.length}',
+                  pathIcon: 'assets/icons/rework_icon.svg',
+                  color: kOrangeColor,
+                  selected:
+                      state.status == _cubit.modelView.taskRework.first.status,
+                  onTap: () {
+                    _cubit.selectTaskStatus(
+                      _cubit.modelView.taskRework.first.status,
+                    );
+                  },
                 ),
               ],
             );

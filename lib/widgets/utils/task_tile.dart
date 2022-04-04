@@ -17,27 +17,6 @@ class TaskTile extends StatefulWidget {
     required this.actionPath,
   }) : super(key: key);
 
-  const TaskTile.homework({
-    required this.actionPath,
-    required this.leadingPath,
-    required this.title,
-    required this.isLast,
-  }) : color = kPurpleColor;
-
-  const TaskTile.lateHomework({
-    required this.actionPath,
-    required this.leadingPath,
-    required this.title,
-    required this.isLast,
-  }) : color = kRedColor;
-
-  const TaskTile.rework({
-    required this.actionPath,
-    required this.leadingPath,
-    required this.title,
-    required this.isLast,
-  }) : color = kOrangeColor;
-
   factory TaskTile.parseTypes(Task model, {required bool last}) {
     String? leadingPath;
     String? actionPath;
@@ -64,10 +43,11 @@ class TaskTile extends StatefulWidget {
         {
           actionPath = "assets/icons/homework_icon.svg";
 
-          return TaskTile.homework(
+          return TaskTile(
             actionPath: actionPath,
             leadingPath: leadingPath,
             title: model.label,
+            color: kPurpleColor,
             isLast: last,
           );
         }
@@ -75,10 +55,11 @@ class TaskTile extends StatefulWidget {
         {
           actionPath = "assets/icons/late_homework_icon.svg";
 
-          return TaskTile.lateHomework(
+          return TaskTile(
             actionPath: actionPath,
             leadingPath: leadingPath,
             title: model.label,
+            color: kRedColor,
             isLast: last,
           );
         }
@@ -86,10 +67,11 @@ class TaskTile extends StatefulWidget {
         {
           actionPath = "assets/icons/rework_icon.svg";
 
-          return TaskTile.rework(
+          return TaskTile(
             actionPath: actionPath,
             leadingPath: leadingPath,
             title: model.label,
+            color: kOrangeColor,
             isLast: last,
           );
         }

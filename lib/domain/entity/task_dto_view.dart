@@ -1,17 +1,17 @@
 import 'package:tz_laborato/domain/entity/task.dart';
 
 class TaskDTOView {
-  const TaskDTOView({required this.tasks});
-
   final List<Task> tasks;
 
-  int get perHomework =>
-      tasks.where((element) => element.status == TaskStatus.homework).length;
+  TaskDTOView(this.tasks);
 
-  int get perLateHomework => tasks
+  List<Task> get taskHomework =>
+      tasks.where((element) => element.status == TaskStatus.homework).toList();
+
+  List<Task> get taskLateHomework => tasks
       .where((element) => element.status == TaskStatus.lateHomework)
-      .length;
+      .toList();
 
-  int get perRework =>
-      tasks.where((element) => element.status == TaskStatus.rework).length;
+  List<Task> get taskRework =>
+      tasks.where((element) => element.status == TaskStatus.rework).toList();
 }
