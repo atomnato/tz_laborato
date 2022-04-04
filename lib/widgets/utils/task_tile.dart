@@ -125,7 +125,7 @@ class _TaskTileState extends State<TaskTile>
       duration: const Duration(milliseconds: 100),
     );
     _myAnimation = Tween<Size>(
-      begin: const Size.fromHeight(67.0),
+      begin: const Size.fromHeight(70.0),
       end: const Size.fromHeight(268.0),
     ).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeIn),
