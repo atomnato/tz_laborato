@@ -112,6 +112,29 @@ class _TaskTileState extends State<TaskTile>
   late Animation<Size> _myAnimation;
   bool isExpand = false;
 
+  Widget _buttonBuilder(String title, Function()? action) {
+    return GestureDetector(
+      onTap: action,
+      child: Container(
+        padding: const EdgeInsets.only(
+          top: 15.0,
+          left: 56,
+          bottom: 14.0,
+          right: 55.0,
+        ),
+        decoration: BoxDecoration(
+          color: kWhiteColor10,
+          border: Border.all(color: kWhiteColor50),
+          borderRadius: BorderRadius.circular(32.0),
+        ),
+        child: Text(
+          title,
+          style: Theme.of(context).textTheme.bodyText1,
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -142,43 +165,82 @@ class _TaskTileState extends State<TaskTile>
           }
         },
         child: Container(
+          clipBehavior: Clip.antiAlias,
           width: double.infinity,
           height: _myAnimation.value.height,
           margin: widget.isLast ? null : const EdgeInsets.only(bottom: 17.0),
           padding: const EdgeInsets.only(
+            top: 16.0,
+            bottom: 14.0,
             left: 16.0,
-            right: 20.0,
+            right: 16.0,
           ),
           decoration: BoxDecoration(
             color: widget.color,
             borderRadius: BorderRadius.circular(12.0),
-            border: Border.all(color: kBorderWhiteColor),
+            border: Border.all(color: kWhiteColor10),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              SvgPicture.asset(widget.leadingPath),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SvgPicture.asset(widget.leadingPath),
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.only(
+                        left: 40.0,
+                        right: 34.0,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 151.0,
+                      ),
+                      child: Text(
+                        widget.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .subtitle2!
+                            .copyWith(color: kTextBlueColor),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: SvgPicture.asset(widget.actionPath),
+                  ),
+                ],
+              ),
               Flexible(
-                child: Container(
-                  padding: const EdgeInsets.only(
-                    left: 40.0,
-                    right: 34.0,
-                  ),
-                  constraints: const BoxConstraints(
-                    minWidth: 151.0,
-                  ),
-                  child: Text(
-                    widget.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2!
-                        .copyWith(color: kTextBlueColor),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 18.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.asset('assets/images/fitness.png'),
+                      const SizedBox(
+                        width: 16.0,
+                      ),
+                      Flexible(
+                        child: Text(
+                          'Здесь текст - описание задания. Для современного мира высокотехнологичная концепция общественного уклада однозначно фиксирует необходимость системы массового участия.',
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption!
+                              .copyWith(color: kWhiteColor),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              SvgPicture.asset(widget.actionPath),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 41.0),
+                  child: _buttonBuilder('Начать', () {}),
+                ),
+              ),
             ],
           ),
         ),
