@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:tz_laborato/data/homework_repository.dart';
 import 'package:tz_laborato/domain/entity/task.dart';
 import 'package:tz_laborato/presentation/homework_board_cubit.dart';
 import 'package:tz_laborato/widgets/utils/colors.dart';
 import 'package:tz_laborato/widgets/utils/curcular_notched_navbar.dart';
+import 'package:tz_laborato/widgets/utils/menu_element.dart';
 import 'package:tz_laborato/widgets/utils/task_tile.dart';
 
 /// Screen with task board user.
@@ -29,13 +29,6 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
     super.initState();
     _cubit = HomeworkBoardCubit(HomeworkRepository());
   }
-
-  Widget _taskWidgetBuilder(
-    Task model,
-    bool isLast,
-    Function()? onTap,
-  ) =>
-      TaskTile.parseTypes(model, last: isLast);
 
   @override
   Widget build(BuildContext context) {
@@ -105,10 +98,9 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
                           ) {
                             bool lastElem =
                                 index == (list.length - 1) ? true : false;
-                            return _taskWidgetBuilder(
+                            return TaskTile.parseTypes(
                               list[index],
-                              lastElem,
-                              () {},
+                              last: lastElem,
                             );
                           },
                         ),
@@ -141,10 +133,9 @@ class _HomeworkBoardScreenState extends State<HomeworkBoardScreen> {
                           ) {
                             bool lastElem =
                                 index == (list.length - 1) ? true : false;
-                            return _taskWidgetBuilder(
+                            return TaskTile.parseTypes(
                               list[index],
-                              lastElem,
-                              () {},
+                              last: lastElem,
                             );
                           },
                         ),
@@ -212,48 +203,6 @@ class _HeaderMenuSection extends StatefulWidget {
 class _HeaderMenuSectionState extends State<_HeaderMenuSection> {
   late HomeworkBoardCubit _cubit;
 
-  Widget menuElement({
-    required Color color,
-    required String pathIcon,
-    required String perTask,
-    required Function()? onTap,
-    required bool selected,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedOpacity(
-        opacity: selected ? 1.0 : 0.2,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.267,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          padding: const EdgeInsets.only(
-            top: 14.0,
-            bottom: 14.0,
-            left: 16.0,
-            right: 12,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                perTask,
-                style: GoogleFonts.jua(
-                  textStyle:
-                      const TextStyle(fontSize: 30.0, color: kWhiteColor50),
-                ),
-              ),
-              SvgPicture.asset(pathIcon),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -270,33 +219,30 @@ class _HeaderMenuSectionState extends State<_HeaderMenuSection> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                menuElement(
-                  perTask: '${_cubit.modelView.taskHomework.length}',
-                  pathIcon: 'assets/icons/homework_icon.svg',
+                MenuElement(
                   color: kPurpleColor,
-                  selected: true,
+                  pathIcon: 'assets/icons/homework_icon.svg',
+                  perTask: '${_cubit.modelView.taskHomework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskHomework.first.status,
                     );
                   },
                 ),
-                menuElement(
-                  perTask: '${_cubit.modelView.taskLateHomework.length}',
+                MenuElement(
+                  color: kPurpleColor,
                   pathIcon: 'assets/icons/late_homework_icon.svg',
-                  color: kRedColor,
-                  selected: true,
+                  perTask: '${_cubit.modelView.taskLateHomework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskLateHomework.first.status,
                     );
                   },
                 ),
-                menuElement(
-                  perTask: '${_cubit.modelView.taskRework.length}',
+                MenuElement(
+                  color: kPurpleColor,
                   pathIcon: 'assets/icons/rework_icon.svg',
-                  color: kOrangeColor,
-                  selected: true,
+                  perTask: '${_cubit.modelView.taskRework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskRework.first.status,
@@ -310,41 +256,41 @@ class _HeaderMenuSectionState extends State<_HeaderMenuSection> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                menuElement(
-                  perTask: '${_cubit.modelView.taskHomework.length}',
-                  pathIcon: 'assets/icons/homework_icon.svg',
+                MenuElement(
                   color: kPurpleColor,
-                  selected: state.status ==
-                      _cubit.modelView.taskHomework.first.status,
+                  pathIcon: 'assets/icons/homework_icon.svg',
+                  perTask: '${_cubit.modelView.taskHomework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskHomework.first.status,
                     );
                   },
+                  selected: state.status ==
+                      _cubit.modelView.taskHomework.first.status,
                 ),
-                menuElement(
-                  perTask: '${_cubit.modelView.taskLateHomework.length}',
+                MenuElement(
+                  color: kPurpleColor,
                   pathIcon: 'assets/icons/late_homework_icon.svg',
-                  color: kRedColor,
-                  selected: state.status ==
-                      _cubit.modelView.taskLateHomework.first.status,
+                  perTask: '${_cubit.modelView.taskLateHomework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskLateHomework.first.status,
                     );
                   },
+                  selected: state.status ==
+                      _cubit.modelView.taskLateHomework.first.status,
                 ),
-                menuElement(
-                  perTask: '${_cubit.modelView.taskRework.length}',
+                MenuElement(
+                  color: kPurpleColor,
                   pathIcon: 'assets/icons/rework_icon.svg',
-                  color: kOrangeColor,
-                  selected:
-                      state.status == _cubit.modelView.taskRework.first.status,
+                  perTask: '${_cubit.modelView.taskRework.length}',
                   onTap: () {
                     _cubit.selectTaskStatus(
                       _cubit.modelView.taskRework.first.status,
                     );
                   },
+                  selected:
+                      state.status == _cubit.modelView.taskRework.first.status,
                 ),
               ],
             );
